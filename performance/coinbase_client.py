@@ -30,7 +30,7 @@ class BarClient(cbpro.WebsocketClient):
 
     def _vwap(self):
         if len(self._pxs):
-            wp = sum([x*y for x,y in zip(self._pxs, self._volumes)])
+            wp = sum(x*y for x,y in zip(self._pxs, self._volumes))
             v = sum(self._volumes)
 
             return wp/v
@@ -87,12 +87,10 @@ def main():
 
     args = argparser.parse_args()
 
-    cfg = {"format": "%(asctime)s - %(levelname)s -  %(message)s"}
-    if args.debug:
-        cfg["level"] = logging.DEBUG
-    else:
-        cfg["level"] = logging.INFO
-
+    cfg = {
+        "format": "%(asctime)s - %(levelname)s -  %(message)s",
+        "level": logging.DEBUG if args.debug else logging.INFO,
+    }
     logging.basicConfig(**cfg)
 
     client = BarClient(url="wss://ws-feed.pro.coinbase.com",

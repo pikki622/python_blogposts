@@ -50,24 +50,16 @@ def score_customer(customer:Customer) -> str:
         return 'F'
     if customer.balance > 500:
         return 'A'
-    # legacy vs. non-legacy
-    if customer.start_date > datetime(2020, 1, 1):
-        if customer.balance < 100:
-            return 'D'
-        elif customer.balance < 200:
-            return 'C'
-        elif customer.balance < 300:
-            return 'B'
-        else:
-            if customer.state in ['Illinois', 'Indiana']:
-                return 'B'
-            else:
-                return 'A'
+    if customer.start_date <= datetime(2020, 1, 1):
+        return 'C' if customer.balance < 100 else 'A'
+    if customer.balance < 100:
+        return 'D'
+    elif customer.balance < 200:
+        return 'C'
+    elif customer.balance < 300:
+        return 'B'
     else:
-        if customer.balance < 100:
-            return 'C'
-        else:
-            return 'A'
+        return 'B' if customer.state in ['Illinois', 'Indiana'] else 'A'
 
 def vectorized_score(df):
     return np.select([df['balance'] < 0,
@@ -100,24 +92,16 @@ def score_customer_attributes(balance:int, start_date:datetime, state:str) -> st
         return 'F'
     if balance > 500:
         return 'A'
-    # legacy vs. non-legacy
-    if start_date > datetime(2020, 1, 1):
-        if balance < 100:
-            return 'D'
-        elif balance < 200:
-            return 'C'
-        elif balance < 300:
-            return 'B'
-        else:
-            if state in ['Illinois', 'Indiana']:
-                return 'B'
-            else:
-                return 'A'
+    if start_date <= datetime(2020, 1, 1):
+        return 'C' if balance < 100 else 'A'
+    if balance < 100:
+        return 'D'
+    elif balance < 200:
+        return 'C'
+    elif balance < 300:
+        return 'B'
     else:
-        if balance < 100:
-            return 'C'
-        else:
-            return 'A'
+        return 'B' if state in {'Illinois', 'Indiana'} else 'A'
 
 def vec(df):
     df['score'] = vectorized_score(df)
@@ -150,13 +134,33 @@ def iloc_iter(df):
 def make_dataframe(n):
     today = datetime.now()
     next_month = today + timedelta(days=30)
-    df = pd.DataFrame([[fake.first_name(), fake.last_name(),
-                        fake.date_this_decade(), fake.date_between_dates(today, next_month),
-                        fake.city(), fake.state(), fake.zipcode(), fake.random_int(-100,1000)]
-                      for r in range(n)],
-                      columns=['first_name', 'last_name', 'start_date', 'end_date', 'city', 'state', 'zipcode', 'balance'])
-    
-    
+    df = pd.DataFrame(
+        [
+            [
+                fake.first_name(),
+                fake.last_name(),
+                fake.date_this_decade(),
+                fake.date_between_dates(today, next_month),
+                fake.city(),
+                fake.state(),
+                fake.zipcode(),
+                fake.random_int(-100, 1000),
+            ]
+            for _ in range(n)
+        ],
+        columns=[
+            'first_name',
+            'last_name',
+            'start_date',
+            'end_date',
+            'city',
+            'state',
+            'zipcode',
+            'balance',
+        ],
+    )
+        
+
     df['start_date'] = pd.to_datetime(df['start_date']) # convert to datetimes
     df['end_date'] = pd.to_datetime(df['end_date'])
     return df
