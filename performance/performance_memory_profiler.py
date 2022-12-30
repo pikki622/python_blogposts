@@ -7,17 +7,15 @@ import numpy as np
 
 @profile
 def simple_function():
-    a = [1] * (10 ** 6)
     b = [2] * (2 * 10 ** 7)
     del b
-    return a
+    return [1] * (10 ** 6)
 
 @profile
 def simple_function2():
-    a = [1] * (10 ** 6)
     b = [2] * (2 * 10 ** 8)
     del b
-    return a
+    return [1] * (10 ** 6)
 
 @lru_cache
 def caching_function(size):
